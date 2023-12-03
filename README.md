@@ -37,3 +37,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 # everyone-class-v2
 # everyone-class-v2
 # everyone_classroom
+# everyone_classroom
