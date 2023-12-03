@@ -1,50 +1,94 @@
 "use client";
 import React from "react";
-import Link from "next/link";
+import {useRouter} from 'next/navigation'
+import {
+  Box,
+  Flex,
+  Avatar,
+  Text,
+  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuDivider,
+  useDisclosure,
+  useColorModeValue,
+  Stack,
+  useColorMode,
+  Center,
+} from '@chakra-ui/react'
+import { MoonIcon, SunIcon } from '@chakra-ui/icons'
 import { signOut, useSession } from "next-auth/react";
 
-const Navbar = () => {
-  const { data: session }: any = useSession();
+export default function Nav() {
+  const { colorMode, toggleColorMode } = useColorMode()
+  const router = useRouter();
+  const { data: session, status }: any = useSession();
   return (
-    <div>
-      <ul className="flex justify-between m-10 item-center">
-        <div>
-          <Link href="/">
-            <li>Home</li>
-          </Link>
-        </div>
-        <div className="flex gap-10">
-          <Link href="/dashboard">
-            <li>Dashboard</li>
-          </Link>
-          {!session ? (
-            <>
-              <Link href="/login">
-                <li>Login</li>
-              </Link>
-              <Link href="/register">
-                <li>Register</li>
-              </Link>
-            </>
-          ) : (
-            <>
-              {session.user?.email}
-              <li>
-                <button
-                  onClick={() => {
-                    signOut();
-                  }}
-                  className="p-2 px-5 -mt-1 bg-blue-800 rounded-full"
-                >
-                  Logout
-                </button>
-              </li>
-            </>
-          )}
-        </div>
-      </ul>
-    </div>
-  );
-};
+    <>
+    {/* Set the Box component width to '100%' to make it take up the entire viewport */}
+    <Box bg={useColorModeValue('gray.100', 'gray.900')} width='100%' px={5}>
+      <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
+        <Box onClick={() => {router.replace('/')}} cursor={'pointer'}>
+          <img src="/logo.png" width={50} height={50}/>
+        </Box>
 
-export default Navbar;
+        <Flex alignItems={'center'}>
+          <Stack direction={'row'} spacing={7}>
+            <Button onClick={toggleColorMode}>
+              {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+            </Button>
+
+            <Menu>
+              {status !== 'unauthenticated' && (
+                <>
+                  <MenuButton
+                    as={Button}
+                    rounded={'full'}
+                    variant={'link'}
+                    cursor={'pointer'}
+                    minW={0}
+                  >
+                    <Avatar
+                      size={'sm'}
+                      src={'https://avatars.dicebear.com/api/male/username.svg'}
+                    />
+                  </MenuButton>
+                  <MenuList alignItems={'center'}>
+                    <br />
+                    <Center>
+                      <Avatar
+                        size={'2xl'}
+                        src={'https://avatars.dicebear.com/api/male/username.svg'}
+                      />
+                    </Center>
+                    <br />
+                    <Center>
+                      <p>{session?.user.name }</p>
+                      <p>{session?.user.role}</p>
+                    </Center>
+                    <br />
+                    <MenuDivider />
+                    <MenuItem onClick={() => signOut()}>Logout</MenuItem>
+                  </MenuList>
+                </>
+              )}
+              {status === 'unauthenticated' && (
+                <Center>
+                  <Text mr={2} fontSize='17' onClick={() => router.replace('/register')} cursor={'pointer'}>
+                    Register
+                  </Text>
+                  <Text fontSize='17' onClick={() => router.replace('/login')} cursor={'pointer'}>
+                    Login
+                  </Text>
+                </Center>
+              )}
+            </Menu>
+          </Stack>
+        </Flex>
+      </Flex>
+    </Box>
+  </>
+  )
+}

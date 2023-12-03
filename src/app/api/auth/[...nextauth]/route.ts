@@ -1,20 +1,23 @@
-import NextAuth from "next-auth";
-import { Account, User as AuthUser } from "next-auth";
-import GithubProvider from "next-auth/providers/github";
-import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-import User from "@/models/User";
-import connect from "@/utils/db";
+import bcrypt from 'bcryptjs';
+import NextAuth, { type NextAuthOptions, type Account, type Profile } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
+import User from '@/models/User';
+import connect from '@/utils/db';
 
-export const authOptions: any = {
-  // Configure one or more authentication providers
+const googleClientId = process.env.GOOGLE_CLIENT_ID || '';
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
+
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      id: "credentials",
-      name: "Credentials",
+      id: 'credentials',
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'text' },
+        password: { label: 'Password', type: 'password' },
+        role: { label: 'Role', type: 'text' },
+        name: { label: 'Name', type: 'text' },
       },
       async authorize(credentials: any) {
         await connect();
@@ -26,46 +29,24 @@ export const authOptions: any = {
               user.password
             );
             if (isPasswordCorrect) {
-              return user;
+              return Promise.resolve(user);
             }
           }
+          return Promise.resolve(null); // Return null if email or password is incorrect
         } catch (err: any) {
           throw new Error(err);
         }
       },
-    }),
-    GithubProvider({
-      clientId: process.env.GITHUB_ID ?? "",
-      clientSecret: process.env.GITHUB_SECRET ?? "",
-    }),
-    // ...add more providers here
-  ],
-  callbacks: {
-    async signIn({ user, account }: { user: AuthUser; account: Account }) {
-      if (account?.provider == "credentials") {
-        return true;
-      }
-      if (account?.provider == "github") {
-        await connect();
-        try {
-          const existingUser = await User.findOne({ email: user.email });
-          if (!existingUser) {
-            const newUser = new User({
-              email: user.email,
-            });
 
-            await newUser.save();
-            return true;
-          }
-          return true;
-        } catch (err) {
-          console.log("Error saving user", err);
-          return false;
-        }
-      }
-    },
+
+    }),
+  ],
+  pages: {
+    // Changing sign in page from /api/auth/signin to /login to avoid secuirty concerns (with roles)
+    signIn: '/login',
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
-export const handler = NextAuth(authOptions);
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

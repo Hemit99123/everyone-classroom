@@ -1,10 +1,10 @@
 import User from "@/models/User";
 import connect from "@/utils/db";
 import bcrypt from "bcryptjs";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
-export const POST = async (request: any) => {
-  const { email, password } = await request.json();
+export const POST = async (request: NextRequest) => {
+  const { name, email, password } = await request.json();
 
   await connect();
 
@@ -16,13 +16,16 @@ export const POST = async (request: any) => {
 
   const hashedPassword = await bcrypt.hash(password, 5);
   const newUser = new User({
+    name,
     email,
     password: hashedPassword,
+    role: "user"
   });
 
   try {
     await newUser.save();
-    return new NextResponse("user is registered", { status: 200 });
+    const userId = newUser._id; // Assuming MongoDB's default ObjectId
+    return NextResponse.json({ id: userId }, {status: 200});
   } catch (err: any) {
     return new NextResponse(err, {
       status: 500,

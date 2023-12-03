@@ -1,17 +1,40 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+'use client'
+import React, { useEffect, useState } from 'react';
+import { signIn, useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import {
+  Box,
+  Button,
+  Center,
+  FormControl,
+  Input,
+  VStack,
+  Text,
+  InputGroup,
+  InputLeftElement
+} from '@chakra-ui/react';
+import { EmailIcon, LockIcon } from '@chakra-ui/icons';
+import { IoPersonCircleSharp } from "react-icons/io5";
+import {useUploadThing} from "../../utils/uploadthing";
 
 const Register = () => {
-  const [error, setError] = useState("");
+  interface ApiResponse {
+    id: string; 
+  }
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState<File | undefined>(undefined);
+
   const router = useRouter();
   const { data: session, status: sessionStatus } = useSession();
 
   useEffect(() => {
-    if (sessionStatus === "authenticated") {
-      router.replace("/dashboard");
+    if (sessionStatus === 'authenticated') {
+      router.replace('/dashboard');
     }
   }, [sessionStatus, router]);
 
@@ -19,85 +42,226 @@ const Register = () => {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
     return emailRegex.test(email);
   };
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    const email = e.target[0].value;
-    const password = e.target[1].value;
 
+  const { startUpload } = useUploadThing("imageUploader", {
+    onClientUploadComplete: async (res) => {
+      alert('Your profile picture is uploaded to the server!')
+      setFile(undefined)
+    },
+  });
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault()
+    // Validate email and password
     if (!isValidEmail(email)) {
-      setError("Email is invalid");
+      setError('Email is invalid');
       return;
     }
 
     if (!password || password.length < 8) {
-      setError("Password is invalid");
+      setError('Password is invalid');
       return;
     }
 
+    let response: { name: string; size: number; key: string; serverData: null; url: string }[] = [];
+
+
     try {
-      const res = await fetch("/api/register", {
-        method: "POST",
+      setLoading(true); // Set loading state to true during the API request
+      
+      // Now you can use the 'response' variable outside the if block.
+      
+
+      let res = await fetch('/api/register', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          name,
           email,
           password,
         }),
       });
+
+
       if (res.status === 400) {
-        setError("This email is already registered");
-      }
-      if (res.status === 200) {
-        setError("");
-        router.push("/login");
+        setError('This email is already registered');
+      } else if (res.status === 200) {
+        const responseData: ApiResponse = await res.json();
+        if (file) {
+          try {
+            // Assuming startUpload returns a value when resolved
+            const uploadResponse = await startUpload([file]);
+            response = uploadResponse || []
+          } catch (error) {
+            // Handle errors during upload
+            console.error("Error during upload:", error);
+            return;
+          }
+          await fetch('/api/register/add-profile-image', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              _id: responseData.id,
+              photo_url: response[0].url
+            }),
+          });
+        }
+        setError('');
+        await signIn("credentials", {
+          redirect: false,
+          email,
+          password
+        })
       }
     } catch (error) {
-      setError("Error, try again");
-      console.log(error);
+      setError('Error, try again');
+      console.error(error);
+    } finally {
+      setLoading(false); // Reset loading state after API request completes
     }
   };
 
-  if (sessionStatus === "loading") {
+  if (sessionStatus === 'loading') {
     return <h1>Loading...</h1>;
   }
 
   return (
-    sessionStatus !== "authenticated" && (
-      <div className="flex min-h-screen flex-col items-center justify-between p-24">
-        <div className="bg-[#212121] p-8 rounded shadow-md w-96">
-          <h1 className="text-4xl text-center font-semibold mb-8">Register</h1>
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              className="w-full border border-gray-300 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:border-blue-400 focus:text-black"
-              placeholder="Email"
-              required
-            />
-            <input
-              type="password"
-              className="w-full border border-gray-300 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:border-blue-400 focus:text-black"
-              placeholder="Password"
-              required
-            />
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-            >
-              {" "}
-              Register
-            </button>
-            <p className="text-red-600 text-[16px] mb-4">{error && error}</p>
-          </form>
-          <div className="text-center text-gray-500 mt-4">- OR -</div>
-          <Link
-            className="block text-center text-blue-500 hover:underline mt-2"
-            href="/login"
-          >
-            Login with an existing account
-          </Link>
-        </div>
-      </div>
+    sessionStatus !== 'authenticated' && (
+      <Center>
+        <Box
+          p="8"
+          rounded="md"
+          boxShadow="md"
+          w="96"
+        >
+          <VStack spacing="8">
+            <h1>Register</h1>
+            <form onSubmit={handleSubmit}>
+              {/* Name Input */}
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement>
+                  <IoPersonCircleSharp  />
+
+                  </InputLeftElement>
+                  <Input
+                    type="text"
+                    placeholder="Name"
+                    isRequired
+                    border="1px"
+                    borderColor="gray.300"
+                    rounded="md"
+                    px="3"
+                    py="2"
+                    _focus={{ borderColor: 'blue.400' }}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    autoComplete='off'
+                  />
+                </InputGroup>
+              </FormControl>
+
+              {/* Email Input */}
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement pointerEvents='none'>
+                    <EmailIcon />
+                  </InputLeftElement>
+                  <Input
+                    type="text"
+                    placeholder="Email"
+                    isRequired
+                    border="1px"
+                    borderColor="gray.300"
+                    rounded="md"
+                    px="3"
+                    py="2"
+                    _focus={{ borderColor: 'blue.400' }}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete='off'
+                  />
+                </InputGroup>
+              </FormControl>
+              
+              {/* Password Input */}
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement>
+                    <LockIcon color='grey.300' />
+                  </InputLeftElement>
+                  <Input
+                    type="password"
+                    placeholder="Password"
+                    isRequired
+                    border="1px"
+                    borderColor="gray.300"
+                    rounded="md"
+                    px="3"
+                    py="2"
+                    _focus={{ borderColor: 'blue.400' }}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete='off'
+                  />
+                </InputGroup>
+              </FormControl>
+              <br />
+              <FormControl>
+              <Text fontSize={'18px'} fontWeight={'bold'}>Upload a profile picture</Text>  
+              <input
+                type="file"
+                onChange={(e) => {
+                  const selectedFile = e.target.files?.[0];
+                  if (selectedFile) {
+                      setFile(selectedFile);
+                    }
+                  }}
+              />
+              </FormControl>
+
+              <FormControl>
+
+
+
+
+              </FormControl>
+              {/* Submit Button */}
+              <Center>
+                <Button
+                  type="submit"
+                  bg="blue.500"
+                  color="white"
+                  py="2"
+                  rounded="md"
+                  _hover={{ bg: 'blue.600' }}
+                  mt={2}
+                  isLoading={loading} // Use Chakra UI isLoading prop
+                >
+                  Register
+                </Button>
+              </Center>
+            </form>
+            
+            {/* Or Text */}
+            <Text>- OR -</Text>
+
+            {/* Login Link */}
+            <Link href="/login">
+              <Text color={'#0066CC'} fontSize='20px'>
+                Login with an existing account
+              </Text>
+            </Link>
+          </VStack>
+          <Center>
+            <Text color={'red'}>{error && error}</Text>
+          </Center>
+        </Box>
+      </Center>
     )
   );
 };
