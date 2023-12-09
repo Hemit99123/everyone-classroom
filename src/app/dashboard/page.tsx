@@ -138,6 +138,8 @@ export default function Dashboard() {
           </Box>
         ))}
       </Grid>
+      <br />
+      <span>{JSON.stringify(session)}</span>
     </Box>
   );
 }

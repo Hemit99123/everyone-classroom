@@ -72,7 +72,7 @@ const Register = () => {
       // Now you can use the 'response' variable outside the if block.
       
 
-      let res = await fetch('/api/register', {
+      let res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ const Register = () => {
             console.error("Error during upload:", error);
             return;
           }
-          await fetch('/api/register/add-profile-image', {
+          await fetch('/api/auth/register/add-profile-image', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

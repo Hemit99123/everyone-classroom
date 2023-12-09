@@ -19,7 +19,7 @@ export const POST = async (request: NextRequest) => {
     name,
     email,
     password: hashedPassword,
-    role: "user"
+    isAdmin: false
   });
 
   try {

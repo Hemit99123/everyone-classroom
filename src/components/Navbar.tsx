@@ -66,7 +66,6 @@ export default function Nav() {
                     <br />
                     <Center>
                       <p>{session?.user.name }</p>
-                      <p>{session?.user.role}</p>
                     </Center>
                     <br />
                     <MenuDivider />
