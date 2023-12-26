@@ -2,7 +2,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import User from '@/models/User';
 import connect from '@/utils/db';
-import NextAuth, { type NextAuthOptions, type Account, type Profile } from 'next-auth'; 
+import NextAuth, { type NextAuthOptions } from 'next-auth'; 
 export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
@@ -39,6 +39,7 @@ export const authOptions: NextAuthOptions = {
                         }
                     }
                     return Promise.resolve(null); // Return null if email or password is incorrect
+                    
                 } catch (err: any) {
                     throw new Error(err);
                 }
@@ -48,10 +49,16 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         // Ref: https://authjs.dev/guides/basics/role-based-access-control#persisting-the-role
         // If you want to use the role in client components
-        async session({ session, token }) {
-            if (session?.user) session.user.isAdmin = token.role;
-            return session;
+        async jwt({ token, user }) {
+            if (user) token.role = user.isAdmin
+            return token
         },
+        // If you want to use the role in client components
+        async session({ session, token }) {
+            if (session?.user) session.user.isAdmin = token.role
+            return session
+        },
+
     }
 };
 const handler = NextAuth(authOptions);

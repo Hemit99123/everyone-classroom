@@ -69,6 +69,9 @@ export default function Nav() {
                     </Center>
                     <br />
                     <MenuDivider />
+                    {session?.user.isAdmin === true &&
+                    <MenuItem onClick={() => router.push('/admin')}>Admin Portal</MenuItem>
+                    }
                     <MenuItem onClick={() => signOut()}>Logout</MenuItem>
                   </MenuList>
                 </>

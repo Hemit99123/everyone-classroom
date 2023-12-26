@@ -28,8 +28,8 @@ interface PostProps {
   githubName?: string;
   githubURL?: string;
   githubCloneURL?: string;
-  githubDescription?: string;
   githubLanguage?: string;
+  githubDescription?: string
   youtubeID?: string;
   sketchfabHTML: string;
   sketchfabTitle?: string;
@@ -45,8 +45,8 @@ const Post: React.FC<PostProps> = ({
   githubName,
   githubURL,
   githubCloneURL,
-  githubDescription,
   githubLanguage,
+  githubDescription,
   youtubeID,
   sketchfabHTML,
   sketchfabTitle,
@@ -120,7 +120,9 @@ const Post: React.FC<PostProps> = ({
               <Badge mt={1} mb={2}>
                 {githubLanguage}
               </Badge>
-              <Text>{githubDescription}</Text>
+              <Text>
+                {githubDescription}
+              </Text>
               <Button
                 mt={2}
                 variant="outline"
@@ -212,37 +214,33 @@ const Post: React.FC<PostProps> = ({
           </Flex>
 
           {showSketchfab[id] && (
-            <Box mt={2}>
-              <Text fontSize="md" fontWeight="semibold" mb={2}>
-                {sketchfabTitle}
-              </Text>
-              {isSmallerThan500 ? (
-                <Box
-                  position="relative"
-                  paddingBottom="56.25%" // 16:9 aspect ratio
-                  height="0"
-                  background="black" // Set the background color
-                >
-                  <iframe
-                    srcDoc={sketchfabHTML}
-                    title="Sketchfab Model"
-                    width="100%"
-                    height="100%"
-                    style={{
-                      position: 'absolute',
-                      top: '0',
-                      left: '0',
-                      border: 'none'
-                    }}
-                  />
-                </Box>
-              ) : (
-                <>
-                  {parse(sketchfabHTML)}
-                </>
-              )}
-            </Box>
-          )}
+  <Box mt={2}>
+    <Text fontSize="md" fontWeight="semibold" mb={2}>
+      {sketchfabTitle}
+    </Text>
+    {isSmallerThan500 ? (
+    <Box
+    position="relative"
+    paddingBottom="56.25%" // 16:9 aspect ratio
+    height="0"
+    background="black" // Set the background color
+  >
+    <iframe
+      srcDoc={sketchfabHTML}
+      title="Sketchfab Model"
+      width="100%"
+      height="100%"
+      style={{ position: "absolute", top: "0", left: "0", border: "none" }}
+    />
+  </Box>
+    ): (
+      <>  
+            {parse(sketchfabHTML)}
+      </>
+    )}
+
+  </Box>
+)}
         </Box>
       )}
     </Box>

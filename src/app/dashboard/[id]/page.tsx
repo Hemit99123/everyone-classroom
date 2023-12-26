@@ -10,6 +10,21 @@ import { Box, Button, Center, Text } from '@chakra-ui/react';
 import {ChevronLeftIcon} from '@chakra-ui/icons'
 // Defining the component
 export default function ExampleClientComponent() {
+
+  interface Github {
+    name: string,
+    repo_url: string,
+    clone_url: string,
+    language: string,
+    description: string 
+  }
+
+  interface SketchFab {
+    name: string,
+    html: string
+  }
+
+  
   // Defining the Post interface
   interface Post {
     _id: string;
@@ -18,14 +33,9 @@ export default function ExampleClientComponent() {
     message: string;
     video_conferencing?: string;
     realworldApplication?: string;
-    githubURL?: string;
-    githubName?: string;
-    githubLanguage?: string;
-    githubDescription?: string;
-    githubCloneURL?: string;
+    github: Github;
     youtubeID?: string;
-    sketchfabHTML: string;
-    sketchfabTitle?: string;
+    sketchfab: SketchFab
   }
 
   // Destructuring values from useSession hook
@@ -38,7 +48,7 @@ export default function ExampleClientComponent() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/post?classID=${classroom_id}`, {
+        const response = await fetch(`/api/classroom/post?classID=${classroom_id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -84,13 +94,13 @@ export default function ExampleClientComponent() {
               title={item.title}
               message={item.message}
               video_conferencing={item.video_conferencing}
-              githubName={item.githubName}
-              githubURL={item.githubURL}
-              githubCloneURL={item.githubCloneURL}
-              githubDescription={item.githubDescription}
-              githubLanguage={item.githubLanguage}
-              sketchfabHTML={item.sketchfabHTML}
-              sketchfabTitle={item.sketchfabTitle}
+              githubName={item.github?.name}
+              githubURL={item.github?.repo_url}
+              githubCloneURL={item.github?.clone_url}
+              githubLanguage={item.github?.language}
+              githubDescription={item.github?.description}
+              sketchfabHTML={item.sketchfab?.html}
+              sketchfabTitle={item.sketchfab?.name}
               youtubeID={item.youtubeID}
               realworldApplication={item.realworldApplication}
             />

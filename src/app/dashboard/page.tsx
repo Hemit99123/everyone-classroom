@@ -1,5 +1,4 @@
 'use client';
-
 import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -24,37 +23,11 @@ export default function Dashboard() {
     genre: string;
     description: string;
   }
-  const { data: session, status }: any = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const [classroom, setClassroom] = useState<ClassroomItems[]>([]);
   const router = useRouter();
   const date = new Date();
   const hours = date.getHours();
-
-  let timeOfDay;
-
-  if (hours < 12) {
-    timeOfDay = (
-      <>
-        <Box as="span">Good&nbsp;</Box>
-        <Box as="span">Morning</Box>
-      </>
-    );
-  } else if (hours >= 12 && hours <= 17) {
-    timeOfDay = (
-      <>
-        <Box as="span">Good&nbsp;</Box>
-        <Box as="span">Afternoon</Box>
-      </>
-    );
-  } else if (hours >= 17 && hours <= 24) {
-    timeOfDay = (
-      <>
-        <Box as="span">Good&nbsp;</Box>
-        <Box as="span">Evening</Box>
-      </>
-    );
-  }
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -70,27 +43,53 @@ export default function Dashboard() {
       }
     };
 
-    // Only fetch data if the user is authenticated
-    if (status === 'authenticated') {
-      fetchData();
-    } else if (status === 'unauthenticated') {
-      // Redirect to the login page if the user is not authenticated
+    if (sessionStatus === 'unauthenticated') {
       router.replace('/login');
+    } else {
+      fetchData();
     }
-  }, [status]); // Include 'status' in the dependency array to re-run the effect when the authentication status changes
+  }, []); 
 
-  if (status === 'loading') {
+
+  let timeOfDay;
+
+  if (hours < 12) {
+    timeOfDay = (
+      <>
+        <Box as="span">Good&nbsp;</Box>
+        <Box as="span">morning</Box>
+      </>
+    );
+  } else if (hours >= 12 && hours <= 17) {
+    timeOfDay = (
+      <>
+        <Box as="span">Good&nbsp;</Box>
+        <Box as="span">afternoon</Box>
+      </>
+    );
+  } else if (hours >= 17 && hours <= 24) {
+    timeOfDay = (
+      <>
+        <Box as="span">Good&nbsp;</Box>
+        <Box as="span">evening</Box>
+      </>
+    );
+  }
+
+  
+
+  if (sessionStatus === 'loading') {
     return (
       <Center>
         <Spinner size="xl" />
       </Center>
     );
   }
-
+  
   return (
     <Box p={3}>
       <Center>
-        <Text fontSize={'3xl'} fontWeight={'bold'}>{timeOfDay} {session?.user.name}</Text>
+        <Text fontSize={'3xl'} fontWeight={'bold'}>{timeOfDay} {session?.user.name}!</Text>
       </Center>
       <Text fontSize={'2xl'} fontWeight={'bold'} mt={2}>Our Courses</Text>
       <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={4}>

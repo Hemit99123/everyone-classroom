@@ -21,14 +21,10 @@ const classSchema = new Schema(
       type: String,
       required: true,
     },
-    instructor_email: {
+    email: {
       type: String,
       required: true
     },
-    view: {
-      type: Boolean,
-      required: true
-    }
   },
   { timestamps: true }
 );

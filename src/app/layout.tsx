@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-
+import { authOptions } from "../app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import SessionProvider from "@/utils/SessionProvider";
 import { ChakraProvider } from "@chakra-ui/react";

@@ -8,6 +8,8 @@ declare module "next-auth" {
         user: {
             id: string,
             isAdmin: any,
+            name: string,
+            email: string
         } & DefaultSession
     }
 

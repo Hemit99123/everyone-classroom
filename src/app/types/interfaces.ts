@@ -1,6 +1,6 @@
 export interface User {
     name?: string | null | undefined;
-    role?: string;
+    isAdmin?: boolean;
     email?: string;
     password?: string;
   }

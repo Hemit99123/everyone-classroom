@@ -2,7 +2,7 @@
 import React from 'react';
 import { Box, Heading, Text, Button, VStack, Badge } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
-import Testimonial from '@/components/Testimonies'
+
 const Home = () => {
   const router = useRouter()
   return (
@@ -70,7 +70,7 @@ const Home = () => {
         <Heading as="h3" size="md" mt={4}>
           What Our Students Say:
         </Heading>
-        <Testimonial />
+
       </VStack>
     </Box>
   );
