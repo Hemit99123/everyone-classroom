@@ -20,10 +20,6 @@ const userSchema = new Schema(
     isAdmin: {
       type: Boolean,
       required: true
-    },
-    photo_url: {
-      type: String,
-      required: false
     }
   },
   { timestamps: true }

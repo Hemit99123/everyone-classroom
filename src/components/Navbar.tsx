@@ -60,7 +60,6 @@ export default function Nav() {
                     <Center>
                       <Avatar
                         size={'2xl'}
-                        src={'https://avatars.dicebear.com/api/male/username.svg'}
                       />
                     </Center>
                     <br />
@@ -86,6 +85,11 @@ export default function Nav() {
                   </Text>
                 </Center>
               )}
+              <Center>
+                <Text mr={2} fontSize='17' onClick={() => router.replace('/about')} cursor={'pointer'}>
+                  About
+                </Text>
+              </Center>
             </Menu>
           </Stack>
         </Flex>

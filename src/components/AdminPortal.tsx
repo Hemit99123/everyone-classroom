@@ -108,6 +108,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ classroomData }) => {
       const response = await fetch(apiUrl);
 
       if (!response.ok) {
+        alert('Something went wrong, try again!')
         throw new Error('API request failed');
       }
 

@@ -1,79 +1,71 @@
 'use client'
 import React from 'react';
-import { Box, Heading, Text, Button, VStack, Badge } from '@chakra-ui/react';
+import { Box, Button, Flex, Image, Heading, Stack, Text } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 
-const Home = () => {
-  const router = useRouter()
+const Hero: React.FC = () => {
+
+  // hero page for main route
+  const router = useRouter();
+
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      minH="100vh"
-      p={8}
+    <Flex
+      align="center"
+      justify={{ base: 'center', md: 'space-around', xl: 'space-between' }}
+      direction={{ base: 'column-reverse', md: 'row' }}
+      minH="70vh"
+      px={8}
+      mb={16}
     >
-      <Box
-        p={8}
-        rounded="lg"
-        shadow="md"
-        textAlign="center"
-        maxW="md"
-        w="100%"
+      <Stack
+        spacing={4}
+        w={{ base: '80%', md: '40%' }}
+        align={['center', 'center', 'flex-start', 'flex-start']}
       >
-        <Heading as="h1" fontSize={'xl'} mb={4} color="teal.500">
-        </Heading>
-        <Text fontSize={'2xl'} fontWeight={'bold'} mb={4} color='teal.500'>
-          LIVE Instruction
-        </Text>
-        <Text fontSize="lg" color="gray.600" mb={4}>
-          Explore, learn, and grow in our STEM-focused online classroom platform.
-        </Text>
-        <Text fontSize="lg" color="gray.600" mb={4}>
-          Check out our diverse range of STEM courses, all available FOR FREE!
-        </Text>
-        <Button colorScheme="teal" size="lg" mt={4} onClick={() => {router.replace('/dashboard')}}>
+      <Heading
+        as="h1"
+        size={['md', 'lg', 'xl', 'xl']}
+        fontWeight="bold"
+        color="primary.800"
+        textAlign={['center', 'center', 'left', 'left']}
+      >
+        This is Everyone Classroom 2.0
+      </Heading>
+        <Heading
+          as="h2"
+          size="md"
+          fontWeight="normal"
+          lineHeight={1.5}
+          textAlign={['center', 'center', 'left', 'left']}
+          bgGradient="linear(to-l, #64B5F6, #81C784)"
+          bgClip="text"
+      >
+          Redesigned, Reimagined.
+      </Heading>
+
+        <Button
+          borderRadius="8px"
+          py="4"
+          px="4"
+          lineHeight="1"
+          size="md"
+          onClick={() => router.push('/dashboard')}
+        >
           Go to dashboard
         </Button>
-      </Box>
-      
-      {/* Additional content */}
-      <VStack spacing={4} mt={8} maxW="xl" w="100%">
-        <Heading as="h2" size="lg">
-          Why Choose Everyone Classroom for STEM Education?
-        </Heading>
-        <Text fontSize="md" color="gray.700" textAlign="center">
-          Our STEM-focused Learning Management System is designed to provide a comprehensive
-          and interactive learning experience for students and professionals in the fields of
-          Science, Technology, Engineering, and Mathematics.
+        <Text fontSize="s" mt={2} textAlign="center" color="primary.800" opacity="0.6">
+          Login is required.
         </Text>
-        <Heading as="h3" size="md">
-          Key Features:
-        </Heading>
-        <VStack spacing={2} align="start" w="100%">
-          <Text fontSize="sm" color="gray.600">
-            - Interactive Labs and Simulations
-          </Text>
-          <Text fontSize="sm" color="gray.600">
-            - STEM Addons such as Github
-          </Text>
-          <Text fontSize="sm" color="gray.600">
-            - Youtube intergration
-          </Text>
-          <Text fontSize="sm" color="gray.600">
-            - Real-world Projects and Case Studies
-          </Text>
-        </VStack>
-        
-        
-        {/* Testimonials */}
-        <Heading as="h3" size="md" mt={4}>
-          What Our Students Say:
-        </Heading>
-
-      </VStack>
-    </Box>
+      </Stack>
+      <Box w={{ base: '80%', sm: '60%', md: '50%' }} mb={{ base: 12, md: 0 }}>
+        <Image
+          src="https://source.unsplash.com/collection/404339/800x600"
+          rounded="1rem"
+          shadow="2xl"
+        />
+      </Box>
+    </Flex>
   );
 };
 
-export default Home;
+export default Hero;
