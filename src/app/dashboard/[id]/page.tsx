@@ -35,7 +35,9 @@ export default function ExampleClientComponent() {
     realworldApplication?: string;
     github: Github;
     youtubeID?: string;
-    sketchfab: SketchFab
+    sketchfab: SketchFab,
+    createdAt: string,
+    updatedAt: string
   }
 
   // Destructuring values from useSession hook
@@ -103,6 +105,8 @@ export default function ExampleClientComponent() {
               sketchfabTitle={item.sketchfab?.name}
               youtubeID={item.youtubeID}
               realworldApplication={item.realworldApplication}
+              createdAt={item.createdAt}
+              updatedAt={item.updatedAt}
             />
           ))}
         </ul>

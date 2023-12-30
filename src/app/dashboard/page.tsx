@@ -91,7 +91,7 @@ export default function Dashboard() {
       <Center>
         <Text fontSize={'3xl'} fontWeight={'bold'}>{timeOfDay} {session?.user.name}!</Text>
       </Center>
-      <Text fontSize={'2xl'} fontWeight={'bold'} mt={2}>Our Courses</Text>
+      <Text fontSize={'2xl'} fontWeight={'bold'} mt={2} marginBottom={3}>Our topics:</Text>
       <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={4}>
         {classroom.map((classItem, index) => (
           <Box
@@ -138,7 +138,6 @@ export default function Dashboard() {
         ))}
       </Grid>
       <br />
-      <span>{JSON.stringify(session)}</span>
     </Box>
   );
 }

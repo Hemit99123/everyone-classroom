@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Text,
@@ -35,6 +35,8 @@ interface PostProps {
   sketchfabTitle?: string;
   realworldApplication?: string;
   userSub?: string;
+  updatedAt: string;
+  createdAt: string;
 }
 
 const Post: React.FC<PostProps> = ({
@@ -51,15 +53,54 @@ const Post: React.FC<PostProps> = ({
   sketchfabHTML,
   sketchfabTitle,
   realworldApplication,
+  updatedAt,
+  createdAt
 }) => {
   const [showYoutube, setShowYoutube] = useState<{ [key: string]: boolean }>({});
   const [showGithub, setShowGithub] = useState<{ [key: string]: boolean }>({});
   const [showSketchfab, setShowSketchfab] = useState<{ [key: string]: boolean }>({});
   const [isSmallerThan500] = useMediaQuery('(max-width: 500px)');
-  const toast = useToast();
+  const toast = useToast()
+
+  // Algorithm to calculate how long time has passed since the creation of the post
+
+  const handleTimePassed = (timestamp: string) => {
+    const providedTimestamp: Date = new Date(timestamp);
+    const currentTime = new Date()
+    const timeDifference: number = currentTime.getTime() - providedTimestamp.getTime();
+    const days: number = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    const weeks: number = Math.floor(timeDifference / (1000 * 60 * 60 * 24 * 7));
+    // Approximates to 365.25 days due to leap years which have a day more than regular years
+    const years: number = Math.floor(timeDifference / (1000 * 60 * 60 * 24 * 365.25));
+
+    if (days < 1) {
+      return 'Today'
+    } 
+    // Assumes its been weeks now since if its been more than 7 days, it has to be in weeks (7 days = 1 week)
+    else if (days < 7) {
+      return `${days} days ago`
+    }
+    // So now we can use weeks instead of days to simplify computation
+    else if (weeks < 52) {
+      return `${weeks} weeks ago`
+    }
+    // Again same logic, more than 52 weeks is in years as 52 weeks is equal to 1 year.
+    else {
+      return `${years} years ago`
+    }
+  };
 
   return (
     <Box borderRadius="md" boxShadow="md" p={4} mb={4}>
+      <Text fontSize="sm" color="gray.500">
+        {handleTimePassed(createdAt)}
+        
+        {createdAt !== updatedAt && (
+          <Text as="span" onClick={() => alert(`Updated at ${handleTimePassed(updatedAt)}`)}>
+            (Edited)
+          </Text>
+        )}
+      </Text>
       <Text fontSize="lg" fontWeight="bold">
         {title}
       </Text>
