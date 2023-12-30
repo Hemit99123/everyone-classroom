@@ -43,7 +43,7 @@ export default function Dashboard() {
       }
     };
 
-    if (sessionStatus === 'unauthenticated') {
+    if (!session) {
       router.replace('/login');
     } else {
       fetchData();
