@@ -1,4 +1,4 @@
-// 'use client'
+'use client'
 import React, { useState } from 'react';
 import {
   Text,
@@ -33,6 +33,7 @@ import {
   CopyIcon,
 } from '@chakra-ui/icons';
 
+import { getSession, useSession } from 'next-auth/react';
 interface AdminPortalProps {
   classroomData: Array<{
     _id: string;
@@ -61,6 +62,7 @@ interface AdminPortalState {
 }
 
 const AdminPortal: React.FC<AdminPortalProps> = ({ classroomData }) => {
+  const {data: session, status: sessionStatus} = useSession()
   const { isOpen: isOpenCreatePost, onOpen: onOpenCreatePost, onClose: onCloseCreatePost } = useDisclosure()
   const { isOpen: isOpenCreateClassroom, onOpen: onOpenCreateClassroom, onClose: onCloseCreateClassroom } = useDisclosure()
   const [state, setState] = useState<AdminPortalState>({

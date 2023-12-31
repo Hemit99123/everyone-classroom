@@ -14,7 +14,6 @@ const classSchema = new Schema(
     },
     instructor: {
       type: String,
-      unique: true,
       required: true,
     },
     description: {
@@ -23,10 +22,6 @@ const classSchema = new Schema(
     },
     email: {
       type: String,
-      required: true
-    },
-    quiz: {
-      type: Array,
       required: true
     }
   },
