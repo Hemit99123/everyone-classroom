@@ -25,6 +25,10 @@ const classSchema = new Schema(
       type: String,
       required: true
     },
+    quiz: {
+      type: Array,
+      required: true
+    }
   },
   { timestamps: true }
 );

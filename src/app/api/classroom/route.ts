@@ -75,7 +75,7 @@ export const POST = async (request: NextRequest) => {
     return NextResponse.json({ message: 'Added classroom' }, { status: 200 });
   } catch (error) {
     console.error("Error posting the data to the database:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return new NextResponse(`Internal Server Error ${error}`, { status: 500 });
   }
 };
 
