@@ -33,7 +33,8 @@ import {
   CopyIcon,
 } from '@chakra-ui/icons';
 
-import { getSession, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
+import { IoPeople } from 'react-icons/io5';
 interface AdminPortalProps {
   classroomData: Array<{
     _id: string;
@@ -62,9 +63,10 @@ interface AdminPortalState {
 }
 
 const AdminPortal: React.FC<AdminPortalProps> = ({ classroomData }) => {
-  const {data: session, status: sessionStatus} = useSession()
+  const {data: session} = useSession()
   const { isOpen: isOpenCreatePost, onOpen: onOpenCreatePost, onClose: onCloseCreatePost } = useDisclosure()
   const { isOpen: isOpenCreateClassroom, onOpen: onOpenCreateClassroom, onClose: onCloseCreateClassroom } = useDisclosure()
+  const { isOpen: isOpenViewStudent, onOpen: onOpenViewStudent, onClose: onCloseViewStudent } = useDisclosure()
   const [state, setState] = useState<AdminPortalState>({
     isOpenCreatePost: false,
     isOpenCreateClassroom: false,
@@ -83,6 +85,13 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ classroomData }) => {
     model_url: '',
     sketchfab: {},
   });
+
+  interface Student {
+    name: string;
+  }
+
+  const [student, setStudent] = useState<Student | null>(null);
+  const [student_email, setStudentEmail] = useState('')
 
   const copyURL = async (id: string) => {
     await navigator.clipboard.writeText(`http://localhost:3000/dashboard/${id}`);
@@ -226,6 +235,56 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ classroomData }) => {
     }
   };
 
+  const handleViewStudents = async (id: string) => {
+    try {
+      const studentResponse = await fetch(`/api/enroll/email?classID=${id}&email=${student_email}`, {
+        method: 'GET',  
+      });
+
+      const studentData = await studentResponse.json()
+
+      setStudent(studentData)
+      
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const handleCertification = async (classID: string, course_name: string) => {
+    try {
+        const response = await fetch('/api/cert', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: session?.user.name,
+                email: session?.user.email,
+                classID,
+                course_name
+            }),
+        });
+
+        if (!response.ok) {
+            // Handle the case where the server returns an error
+            console.error(`Failed to submit certification. Server returned status ${response.status}`);
+            // You might want to throw an error or handle it in some other way
+            throw new Error('Failed to submit certification');
+        } else {
+            const data = await response.json(); // Parse the response body as JSON
+
+            // Now you can use the 'message' variable in your code
+            alert(data.message)
+        }
+    } catch (error) {
+        // Handle any errors that occurred during the fetch or JSON parsing
+        console.error("Error during certification:", error);
+        // You might want to throw an error or handle it in some other way
+        throw new Error('Failed to submit certification');
+    }
+};
+
+  
   return (
     <div>
       <Heading marginBottom={2} p={6}>
@@ -282,6 +341,14 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ classroomData }) => {
                   Copy
                 </Button>
                 <Button
+                  leftIcon={<IoPeople />}
+                  colorScheme="purple"
+                  variant="outline"
+                  onClick={onOpenViewStudent}
+                >
+                  View students
+                </Button>
+                <Button
                   leftIcon={<DeleteIcon />}
                   colorScheme="red"
                   variant="outline"
@@ -291,6 +358,30 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ classroomData }) => {
                 </Button>
               </CardFooter>
             </Card>
+                  {/* Student view modal */}
+      <Modal
+        isOpen={isOpenViewStudent}
+        onClose={onCloseViewStudent}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Student Query</ModalHeader>
+          <ModalCloseButton />
+          <FormControl>
+            <FormLabel>Student Email</FormLabel>
+            <Input placeholder='abc@gmail.com' onChange={(e) => setStudentEmail(e.target.value)}/>
+          </FormControl>
+          <Button onClick={() => handleViewStudents(classItem._id)}>Get student</Button>
+
+            {student &&
+            <Box marginTop={2}>
+            <Text fontSize={'xl'} fontWeight={'bold'}>Name: {student.name}</Text> 
+            <Button width={'100%'} color={'lightblue'} onClick={() => handleCertification(classItem._id, classItem.title)}>Certify them</Button>
+            </Box>
+            }
+          <ModalFooter />
+        </ModalContent>
+      </Modal>
             {/* Post creation model */}
             <Modal isOpen={isOpenCreatePost} onClose={onCloseCreatePost}>
               <ModalOverlay />

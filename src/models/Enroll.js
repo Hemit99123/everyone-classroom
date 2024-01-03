@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-const userSchema = new Schema(
+const enrollSchema = new Schema(
   {
     name: {
       type: String,
@@ -13,16 +13,12 @@ const userSchema = new Schema(
       unique: true,
       required: true,
     },
-    password: {
+    classID: {
       type: String,
       required: true,
-    },
-    isAdmin: {
-      type: Boolean,
-      required: true
     }
   },
   { timestamps: true }
 );
 
-export default mongoose.models.User || mongoose.model("User", userSchema);
+export default mongoose.models.Enroll || mongoose.model("Enroll", enrollSchema);

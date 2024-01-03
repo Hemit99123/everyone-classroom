@@ -1,19 +1,17 @@
 import Post from "@/models/Post";
 import connect from "@/utils/db";
-import { getServerSession } from "next-auth";
 import { NextResponse, NextRequest } from "next/server";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { handleServerAuth, handleServerAdminAuth } from "@/utils/auth";
 
 export const GET = async (request: NextRequest) => {
-  const session = await getServerSession(authOptions)
   const classID = await request.nextUrl.searchParams.get('classID');
-  
-  if (!session) {
-      return NextResponse.json({ message: 'You are not logged in.' }, { status: 401 })
-  } else {
-      await connect();
-
       try {
+        const auth = await handleServerAuth()
+
+        if(auth) {
+          return auth
+        }
+            await connect();
           const postsFromClassroom = await Post.find({ classID })
               .sort({ createdAt: -1 }) // Sort by creation date in ascending order
               .exec();
@@ -28,22 +26,14 @@ export const GET = async (request: NextRequest) => {
           return new NextResponse("Internal Server Error", { status: 500 });
       }
   }
-};
 
 export const POST = async (request: NextRequest) => {
     try {
-  
-      // Get the user session
-      const session = await getServerSession(authOptions);
-  
-      // Check if the user is not logged in
-      if (!session) {
-        return NextResponse.json({ message: 'You are not logged in.' }, { status: 401 });
-      }
-  
-      // Check if the user is not an admin
-      if (session.user.isAdmin === false) {
-        return NextResponse.json({ message: 'You do not have permission.' }, { status: 403 });
+
+      const auth = await handleServerAdminAuth()
+
+      if(auth) {
+        return auth
       }
       const { classID, title, message, video_conferencing, github, realworldApplication, youtubeID, sketchfab } = await request.json();
       // Connect to the database

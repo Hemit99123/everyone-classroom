@@ -7,25 +7,24 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Post from '@/components/Post';
 import { Box, Button, Center, Text } from '@chakra-ui/react';
-import {ChevronLeftIcon} from '@chakra-ui/icons'
+import { ChevronLeftIcon } from '@chakra-ui/icons';
+
 // Defining the component
 export default function ExampleClientComponent() {
-
+  // Defining the Post interface
   interface Github {
-    name: string,
-    repo_url: string,
-    clone_url: string,
-    language: string,
-    description: string 
+    name: string;
+    repo_url: string;
+    clone_url: string;
+    language: string;
+    description: string;
   }
 
   interface SketchFab {
-    name: string,
-    html: string
+    name: string;
+    html: string;
   }
 
-  
-  // Defining the Post interface
   interface Post {
     _id: string;
     classID: string;
@@ -35,14 +34,15 @@ export default function ExampleClientComponent() {
     realworldApplication?: string;
     github: Github;
     youtubeID?: string;
-    sketchfab: SketchFab,
-    createdAt: string,
-    updatedAt: string
+    sketchfab: SketchFab;
+    createdAt: string;
+    updatedAt: string;
   }
 
   // Destructuring values from useSession hook
   const { data: session, status: sessionStatus } = useSession();
   const [posts, setPosts] = useState<Post[]>();
+  const [isEnrolled, setIsEnrolled] = useState<boolean>(false);
   const router = useRouter();
   const { id: classroom_id } = useParams();
 
@@ -50,19 +50,31 @@ export default function ExampleClientComponent() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/classroom/post?classID=${classroom_id}`, {
+        // Fetching enrollment status
+        const enrollResponse = await fetch(`/api/enroll?classID=${classroom_id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+        // If already enrolled, show posts
+        if (enrollResponse.status == 200) {
+          setIsEnrolled(true)
+          const postResponse = await fetch(`/api/classroom/post?classID=${classroom_id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
 
-        const data = await response.json();
-        setPosts(data);
+          if (!postResponse.ok) {
+            throw new Error(`HTTP error! Status: ${postResponse.status}`);
+          }
+
+          const postData = await postResponse.json();
+          setPosts(postData);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -79,17 +91,17 @@ export default function ExampleClientComponent() {
   // Rendering the component
   return (
     <Box>
-    <Center mt={2}>
-        <Button leftIcon={<ChevronLeftIcon fontSize='25px'/>} onClick={() => {router.replace('/dashboard')}}>
-            Go back
+      <Center mt={2}>
+        <Button leftIcon={<ChevronLeftIcon fontSize="25px" />} onClick={() => router.replace('/dashboard')}>
+          Go back
         </Button>
-        <Text fontSize='3xl' fontWeight='bold' ml={4}>
-            Class Feed
+        <Text fontSize="3xl" fontWeight="bold" ml={4}>
+          Class Feed
         </Text>
-    </Center>
-      {posts && (
+      </Center>
+      {isEnrolled && (
         <ul>
-          {posts.map((item) => (
+          {posts?.map((item) => (
             <Post
               key={item._id}
               id={item._id}
@@ -111,6 +123,34 @@ export default function ExampleClientComponent() {
           ))}
         </ul>
       )}
+      {!isEnrolled && (
+        <>
+          <Button mt={4} onClick={enrollUser}>
+            Enroll
+          </Button>
+          <Text>Reload upon enrolling</Text>
+        </>
+      )}
     </Box>
   );
+
+  async function enrollUser() {
+    try {
+      const enrollUserResponse = await fetch(`/api/enroll`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ classID: classroom_id }),
+      });
+
+      if (!enrollUserResponse.ok) {
+        throw new Error(`HTTP error! Status: ${enrollUserResponse.status}`);
+      }
+
+      setIsEnrolled(true);
+    } catch (error) {
+      console.error('Error enrolling user:', error);
+    }
+  }
 }

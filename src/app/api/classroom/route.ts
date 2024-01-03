@@ -1,38 +1,16 @@
 import Classroom from "@/models/Classroom";
 import connect from "@/utils/db";
 import { NextRequest, NextResponse } from "next/server";
+import {handleServerAuth, handleServerAdminAuth} from '@/utils/auth'
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 
-interface Session {
-  user: {
-    isAdmin: boolean;
-    name: string;
-    email: string;
-  };
-}
-
-const authenticateSession = async (): Promise<Session | null> => {
-  return await getServerSession(authOptions);
-};
-
-const handleAdminAuthentication = async (): Promise<NextResponse | null> => {
-  const session = await authenticateSession();
-
-  if (!session) {
-    return NextResponse.json({ message: 'You are not logged in.' }, { status: 401 });
-  } else if (!session.user.isAdmin) {
-    return NextResponse.json({ message: 'You do not have permission.' }, { status: 403 });
-  }
-
-  return null;
-};
 
 export const GET = async () => {
 
-    const session = await authenticateSession();
-    if(!session) {
-        return NextResponse.json({message: "You are not logged in."}, {status: 401})
+    const auth = await handleServerAuth();
+    if(auth) {
+        return auth
     }
 
   await connect();
@@ -52,11 +30,10 @@ export const GET = async () => {
 };
 
 export const POST = async (request: NextRequest) => {
-  const authenticationError = await handleAdminAuthentication();
-  const session = await authenticateSession()
-
-  if (authenticationError) {
-    return authenticationError;
+  const session = await getServerSession(authOptions)
+  const auth = await handleServerAdminAuth();
+  if (auth) {
+    return auth;
   }
 
   const { title, genre, description } = await request.json();
@@ -80,11 +57,11 @@ export const POST = async (request: NextRequest) => {
 };
 
 export const DELETE = async (request: NextRequest) => {
-  const authenticationError = await handleAdminAuthentication();
-  const session = await authenticateSession()
+  const session = await getServerSession(authOptions)
+  const auth = await handleServerAdminAuth();
 
-  if (authenticationError) {
-    return authenticationError;
+  if (auth) {
+    return auth;
   }
 
   const { id } = await request.json();
