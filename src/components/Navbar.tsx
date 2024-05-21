@@ -20,6 +20,7 @@ import {
 } from '@chakra-ui/react'
 import { MoonIcon, SunIcon } from '@chakra-ui/icons'
 import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 
 export default function Nav() {
   const { colorMode, toggleColorMode } = useColorMode()
@@ -71,7 +72,10 @@ export default function Nav() {
                     {session?.user.isAdmin === true &&
                     <MenuItem onClick={() => router.push('/admin')}>Admin Portal</MenuItem>
                     }
-                    <MenuItem onClick={() => signOut({ callbackUrl: 'https://main--everyonestem-project.netlify.app/' })}>Logout</MenuItem>
+                    <Link href={'/'}>
+                      <MenuItem onClick={() => signOut()}>Logout</MenuItem>
+                    </Link>
+
                   </MenuList>
                 </>
               )}
