@@ -71,7 +71,7 @@ export default function Nav() {
                     {session?.user.isAdmin === true &&
                     <MenuItem onClick={() => router.push('/admin')}>Admin Portal</MenuItem>
                     }
-                    <MenuItem onClick={() => signOut({ callbackUrl: 'https://main--everyonestem-project.netlify.app/' })}>Logout</MenuItem>
+                    <MenuItem onClick={() => signOut({ callbackUrl: '/' })}>Logout</MenuItem>
                   </MenuList>
                 </>
               )}
