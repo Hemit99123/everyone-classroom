@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { useSession } from "next-auth/react";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 export const handleServerAuth = async (): Promise<NextResponse | null> => {
     const session = await getServerSession(authOptions)
