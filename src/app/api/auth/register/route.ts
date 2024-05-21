@@ -29,6 +29,7 @@ export const POST = async (request: NextRequest) => {
   } catch (err: any) {
     return new NextResponse(err, {
       status: 500,
+      statusText: err
     });
   }
 };
