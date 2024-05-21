@@ -85,11 +85,6 @@ export default function Nav() {
                   </Text>
                 </Center>
               )}
-              <Center>
-                <Text mr={2} fontSize='17' onClick={() => router.replace('/about')} cursor={'pointer'}>
-                  About
-                </Text>
-              </Center>
             </Menu>
           </Stack>
         </Flex>
