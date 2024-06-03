@@ -1,4 +1,4 @@
-import Classroom from "@/models/Classroom";
+import Topics from "@/models/Topics";
 import connect from "@/utils/db";
 import { NextRequest, NextResponse } from "next/server";
 import {handleServerAuth, handleServerAdminAuth} from '@/utils/auth'
@@ -16,9 +16,9 @@ export const GET = async () => {
   await connect();
 
   try {
-    const classrooms = await Classroom.find({}).exec();
+    const topics = await Topics.find({}).exec();
 
-    return new NextResponse(JSON.stringify(classrooms), {
+    return new NextResponse(JSON.stringify(topics), {
       headers: {
         "Content-Type": "application/json",
       },
@@ -36,20 +36,17 @@ export const POST = async (request: NextRequest) => {
     return auth;
   }
 
-  const { title, genre, description } = await request.json();
+  const { title, description } = await request.json();
   await connect();
 
-  const newClassroom = new Classroom({
+  const newTopic = new Topics({
     title,
-    genre,
-    instructor: session?.user.name,
     description,
-    email: session?.user.email,
   });
 
   try {
-    await newClassroom.save();
-    return NextResponse.json({ message: 'Added classroom' }, { status: 200 });
+    await newTopic.save();
+    return NextResponse.json({ message: 'Added topic' }, { status: 200 });
   } catch (error) {
     console.error("Error posting the data to the database:", error);
     return new NextResponse(`Internal Server Error ${error}`, { status: 500 });
@@ -57,7 +54,6 @@ export const POST = async (request: NextRequest) => {
 };
 
 export const DELETE = async (request: NextRequest) => {
-  const session = await getServerSession(authOptions)
   const auth = await handleServerAdminAuth();
 
   if (auth) {
@@ -68,19 +64,12 @@ export const DELETE = async (request: NextRequest) => {
   await connect();
 
   try {
-    const classroom = await Classroom.findOne({ _id: id }).exec();
+    const deletedTopic = await Topics.findByIdAndDelete(id);
 
-    // Verifying that admin owns classroom
-    if (classroom.email !== session?.user.email) {
-      return NextResponse.json({ message: 'This is not your classroom' }, { status: 403 });
-    }
-
-    const deletedClass = await Classroom.findByIdAndDelete(id);
-
-    if (!deletedClass) {
-      return NextResponse.json({ message: 'Classroom not found' }, { status: 404 });
+    if (!deletedTopic) {
+      return NextResponse.json({ message: 'Topic not found' }, { status: 404 });
     } else {
-      return NextResponse.json({ message: 'Deleted classroom' }, { status: 200 });
+      return NextResponse.json({ message: 'Deleted topic' }, { status: 200 });
     }
   } catch (error) {
     console.error("Error deleting the data from the database:", error);

@@ -1,4 +1,4 @@
-import Classroom from "@/models/Classroom";
+import Topics from "@/models/Topics";
 import connect from "@/utils/db";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
@@ -17,10 +17,10 @@ export const GET = async (req: any) => {
     // Connect to the database
     await connect();
 
-    // Fetch classrooms for the logged-in user
-    const classrooms = await Classroom.find({ email: session?.user.email }).exec();
+    // Fetch topics for the logged-in user
+    const topicss = await Topics.find({ email: session?.user.email }).exec();
     
-    return NextResponse.json(classrooms)
+    return NextResponse.json(topicss)
   } catch (error) {
     console.error("Error fetching data from the database:", error);
     return new NextResponse("Internal Server Error", { status: 500 });

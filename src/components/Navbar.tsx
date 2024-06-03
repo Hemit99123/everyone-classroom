@@ -32,7 +32,12 @@ export default function Nav() {
     <Box bg={useColorModeValue('gray.100', 'gray.900')} width='100%' px={5}>
       <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
         <Box onClick={() => {router.replace('/')}} cursor={'pointer'}>
-          <img src="/logo.png" width={50} height={50}/>
+          {colorMode === 'dark' &&
+            <img src="/logo_white.png" width={50} height={50}/>
+          }
+          {colorMode === 'light' &&
+            <img src="/logo_black.png" width={50} height={50}/>
+          }
         </Box>
 
         <Flex alignItems={'center'}>

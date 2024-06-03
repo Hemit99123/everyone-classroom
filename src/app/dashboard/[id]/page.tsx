@@ -42,51 +42,30 @@ export default function ExampleClientComponent() {
   // Destructuring values from useSession hook
   const { data: session, status: sessionStatus } = useSession();
   const [posts, setPosts] = useState<Post[]>();
-  const [isEnrolled, setIsEnrolled] = useState<boolean>(false);
   const router = useRouter();
-  const { id: classroom_id } = useParams();
+  const { id: topicId } = useParams();
+
+  const getPostData = async () => {
+    const postResponse = await fetch(`/api/topic/post?topicId=${topicId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    const postData = await postResponse.json();
+    setPosts(postData);
+  }
 
   // Fetching data when the component mounts
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetching enrollment status
-        const enrollResponse = await fetch(`/api/enroll?classID=${classroom_id}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        // If already enrolled, show posts
-        if (enrollResponse.status == 200) {
-          setIsEnrolled(true)
-          const postResponse = await fetch(`/api/classroom/post?classID=${classroom_id}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-
-          if (!postResponse.ok) {
-            throw new Error(`HTTP error! Status: ${postResponse.status}`);
-          }
-
-          const postData = await postResponse.json();
-          setPosts(postData);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
     // Redirecting to login if the user is unauthenticated
     if (sessionStatus === 'unauthenticated') {
       router.replace('/login');
     } else {
-      fetchData();
+      getPostData()
     }
-  }, [classroom_id, router, sessionStatus]);
+  }, [router, sessionStatus]);
 
   // Rendering the component
   return (
@@ -99,7 +78,6 @@ export default function ExampleClientComponent() {
           Class Feed
         </Text>
       </Center>
-      {isEnrolled && (
         <ul>
           {posts?.map((item) => (
             <Post
@@ -122,35 +100,6 @@ export default function ExampleClientComponent() {
             />
           ))}
         </ul>
-      )}
-      {!isEnrolled && (
-        <>
-          <Button mt={4} onClick={enrollUser}>
-            Enroll
-          </Button>
-          <Text>Reload upon enrolling</Text>
-        </>
-      )}
     </Box>
   );
-
-  async function enrollUser() {
-    try {
-      const enrollUserResponse = await fetch(`/api/enroll`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ classID: classroom_id }),
-      });
-
-      if (!enrollUserResponse.ok) {
-        throw new Error(`HTTP error! Status: ${enrollUserResponse.status}`);
-      }
-
-      setIsEnrolled(true);
-    } catch (error) {
-      console.error('Error enrolling user:', error);
-    }
-  }
 }

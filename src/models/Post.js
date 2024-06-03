@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const postSchema = new Schema({
-  classID: {
+  topicId: {
     type: String,
     required: true
   },
@@ -14,10 +14,6 @@ const postSchema = new Schema({
   message: {
     type: String,
     required: true
-  },
-  video_conferencing: {
-    type: String,
-    required: false
   },
   realworldApplication: {
     type: String,

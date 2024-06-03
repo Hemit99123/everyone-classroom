@@ -4,7 +4,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { handleServerAuth, handleServerAdminAuth } from "@/utils/auth";
 
 export const GET = async (request: NextRequest) => {
-  const classID = await request.nextUrl.searchParams.get('classID');
+  const topicId = await request.nextUrl.searchParams.get('topicId');
       try {
         const auth = await handleServerAuth()
 
@@ -12,7 +12,7 @@ export const GET = async (request: NextRequest) => {
           return auth
         }
             await connect();
-          const postsFromClassroom = await Post.find({ classID })
+          const postsFromClassroom = await Post.find({ topicId })
               .sort({ createdAt: -1 }) // Sort by creation date in ascending order
               .exec();
   
@@ -35,15 +35,14 @@ export const POST = async (request: NextRequest) => {
       if(auth) {
         return auth
       }
-      const { classID, title, message, video_conferencing, github, realworldApplication, youtubeID, sketchfab } = await request.json();
+      const { topicId, title, message, github, realworldApplication, youtubeID, sketchfab } = await request.json();
       // Connect to the database
       await connect();
   
       const newPost = new Post({
-        classID,
+        topicId,
         title,
         message,
-        video_conferencing,
         github,
         realworldApplication,
         youtubeID,
@@ -61,4 +60,28 @@ export const POST = async (request: NextRequest) => {
       console.error("Error fetching data from the database:", error);
       return new NextResponse("Internal Server Error", { status: 500 });
     }
-  };
+};
+
+export const DELETE = async (request: NextRequest) => {
+  const auth = await handleServerAdminAuth();
+
+  if (auth) {
+    return auth;
+  }
+
+  const { id } = await request.json();
+  await connect();
+
+  try {
+    const deletedPost = await Post.findByIdAndDelete(id);
+
+    if (!deletedPost) {
+      return NextResponse.json({ message: 'Post not found' }, { status: 404 });
+    } else {
+      return NextResponse.json({ message: 'Deleted post' }, { status: 200 });
+    }
+  } catch (error) {
+    console.error("Error deleting the data from the database:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+};

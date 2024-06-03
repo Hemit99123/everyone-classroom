@@ -29,7 +29,7 @@ const Hero: React.FC = () => {
         color="primary.800"
         textAlign={['center', 'center', 'left', 'left']}
       >
-        This is Everyone Classroom 2.0
+        This is CESC DevDock
       </Heading>
         <Heading
           as="h2"
@@ -40,7 +40,7 @@ const Hero: React.FC = () => {
           bgGradient="linear(to-l, #64B5F6, #81C784)"
           bgClip="text"
       >
-          Redesigned, Reimagined.
+          The all-in-one platform...
       </Heading>
 
         <Button

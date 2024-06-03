@@ -16,9 +16,11 @@ import {
   FaCode,
   FaVideo,
   FaExternalLinkAlt,
-  FaCubes
+  FaCubes,
+  FaTrash
 } from 'react-icons/fa';
 import parse from 'html-react-parser';
+import { getSession, useSession } from 'next-auth/react';
 
 interface PostProps {
   id: string;
@@ -29,7 +31,7 @@ interface PostProps {
   githubURL?: string;
   githubCloneURL?: string;
   githubLanguage?: string;
-  githubDescription?: string
+  githubDescription?: string;
   youtubeID?: string;
   sketchfabHTML: string;
   sketchfabTitle?: string;
@@ -54,39 +56,47 @@ const Post: React.FC<PostProps> = ({
   sketchfabTitle,
   realworldApplication,
   updatedAt,
-  createdAt
+  createdAt,
 }) => {
   const [showYoutube, setShowYoutube] = useState<{ [key: string]: boolean }>({});
   const [showGithub, setShowGithub] = useState<{ [key: string]: boolean }>({});
   const [showSketchfab, setShowSketchfab] = useState<{ [key: string]: boolean }>({});
   const [isSmallerThan500] = useMediaQuery('(max-width: 500px)');
-  const toast = useToast()
-
-  // Algorithm to calculate how long time has passed since the creation of the post
+  const { data: session, status }: any = useSession();
+  const toast = useToast();
 
   const handleTimePassed = (timestamp: string) => {
     const providedTimestamp: Date = new Date(timestamp);
-    const currentTime = new Date()
+    const currentTime = new Date();
     const timeDifference: number = currentTime.getTime() - providedTimestamp.getTime();
     const days: number = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
     const weeks: number = Math.floor(timeDifference / (1000 * 60 * 60 * 24 * 7));
-    // Approximates to 365.25 days due to leap years which have a day more than regular years
     const years: number = Math.floor(timeDifference / (1000 * 60 * 60 * 24 * 365.25));
 
     if (days < 1) {
-      return 'Today'
-    } 
-    // Assumes its been weeks now since if its been more than 7 days, it has to be in weeks (7 days = 1 week)
-    else if (days < 7) {
-      return `${days} days ago`
+      return 'Today';
+    } else if (days < 7) {
+      return `${days} days ago`;
+    } else if (weeks < 52) {
+      return `${weeks} weeks ago`;
+    } else {
+      return `${years} years ago`;
     }
-    // So now we can use weeks instead of days to simplify computation
-    else if (weeks < 52) {
-      return `${weeks} weeks ago`
-    }
-    // Again same logic, more than 52 weeks is in years as 52 weeks is equal to 1 year.
-    else {
-      return `${years} years ago`
+  };
+
+  const handleDelete = async () => {
+    try {
+      await fetch('/api/topic/post', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
+        }),
+      });
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -94,7 +104,6 @@ const Post: React.FC<PostProps> = ({
     <Box borderRadius="md" boxShadow="md" p={4} mb={4}>
       <Text fontSize="sm" color="gray.500">
         {handleTimePassed(createdAt)}
-        
         {createdAt !== updatedAt && (
           <Text as="span" onClick={() => alert(`Updated at ${handleTimePassed(updatedAt)}`)}>
             (Edited)
@@ -253,36 +262,42 @@ const Post: React.FC<PostProps> = ({
               Powered by Sketchfab
             </Text>
           </Flex>
-
           {showSketchfab[id] && (
-  <Box mt={2}>
-    <Text fontSize="md" fontWeight="semibold" mb={2}>
-      {sketchfabTitle}
-    </Text>
-    {isSmallerThan500 ? (
-    <Box
-    position="relative"
-    paddingBottom="56.25%" // 16:9 aspect ratio
-    height="0"
-    background="black" // Set the background color
-  >
-    <iframe
-      srcDoc={sketchfabHTML}
-      title="Sketchfab Model"
-      width="100%"
-      height="100%"
-      style={{ position: "absolute", top: "0", left: "0", border: "none" }}
-    />
-  </Box>
-    ): (
-      <>  
-            {parse(sketchfabHTML)}
-      </>
-    )}
-
-  </Box>
-)}
+            <Box mt={2}>
+              <Text fontSize="md" fontWeight="semibold" mb={2}>
+                {sketchfabTitle}
+              </Text>
+              {isSmallerThan500 ? (
+                <Box
+                  position="relative"
+                  paddingBottom="56.25%"
+                  height="0"
+                  background="black"
+                >
+                  <iframe
+                    srcDoc={sketchfabHTML}
+                    title="Sketchfab Model"
+                    width="100%"
+                    height="100%"
+                    style={{ position: "absolute", top: "0", left: "0", border: "none" }}
+                  />
+                </Box>
+              ) : (
+                parse(sketchfabHTML)
+              )}
+            </Box>
+          )}
         </Box>
+      )}
+      {session.user.isAdmin && (
+        <Button
+          mt={4}
+          colorScheme="red"
+          leftIcon={<FaTrash />}
+          onClick={handleDelete}
+        >
+          Delete Post
+        </Button>
       )}
     </Box>
   );

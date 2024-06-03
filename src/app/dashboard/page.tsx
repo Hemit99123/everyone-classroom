@@ -18,7 +18,7 @@ import {
 } from '@chakra-ui/react';
 
 export default function Dashboard() {
-  interface ClassroomItems {
+  interface TopicItems {
     _id: string;
     title: string;
     instructor: string;
@@ -27,7 +27,7 @@ export default function Dashboard() {
   }
 
   const { data: session, status: sessionStatus } = useSession();
-  const [classroom, setClassroom] = useState<ClassroomItems[]>([]);
+  const [topic, setTopic] = useState<TopicItems[]>([]);
   const router = useRouter();
   const date = new Date();
   const hours = date.getHours();
@@ -35,13 +35,13 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/classroom');
+        const response = await fetch('/api/topic');
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
         const data = await response.json();
-        setClassroom(data);
+        setTopic(data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -110,7 +110,7 @@ export default function Dashboard() {
             Our topics:
           </Text>
           <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={4}>
-            {classroom.map((classItem, index) => (
+            {topic.map((classItem, index) => (
               <Box
                 key={index}
                 onClick={() => {
@@ -134,9 +134,8 @@ export default function Dashboard() {
                       >
                         <Box>
                           <Heading size="sm">{classItem.title}</Heading>
-                          <Text>{classItem.instructor}</Text>
                           <Badge borderRadius="full" px="2" colorScheme="teal">
-                            {classItem.genre}
+                            CESC
                           </Badge>
                         </Box>
                       </Flex>
