@@ -1,23 +1,12 @@
+// your route file
 import Topics from "@/models/Topics";
-import connect from "@/utils/db";
 import { NextRequest, NextResponse } from "next/server";
-import {handleServerAuth, handleServerAdminAuth} from '@/utils/auth'
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { withAuthHandler } from "@/utils/handler";
 
-
-export const GET = async () => {
-
-    const auth = await handleServerAuth();
-    if(auth) {
-        return auth
-    }
-
-  await connect();
-
+// GET handler
+const getTopics = async () => {
   try {
     const topics = await Topics.find({}).exec();
-
     return new NextResponse(JSON.stringify(topics), {
       headers: {
         "Content-Type": "application/json",
@@ -29,15 +18,11 @@ export const GET = async () => {
   }
 };
 
-export const POST = async (request: NextRequest) => {
-  const session = await getServerSession(authOptions)
-  const auth = await handleServerAdminAuth();
-  if (auth) {
-    return auth;
-  }
+export const GET = withAuthHandler(getTopics, false); 
 
+// POST handler
+const createTopic = async (request: NextRequest) => {
   const { title, description } = await request.json();
-  await connect();
 
   const newTopic = new Topics({
     title,
@@ -53,15 +38,11 @@ export const POST = async (request: NextRequest) => {
   }
 };
 
-export const DELETE = async (request: NextRequest) => {
-  const auth = await handleServerAdminAuth();
+export const POST = withAuthHandler(createTopic, true); 
 
-  if (auth) {
-    return auth;
-  }
-
+// DELETE handler
+const deleteTopic = async (request: NextRequest) => {
   const { id } = await request.json();
-  await connect();
 
   try {
     const deletedTopic = await Topics.findByIdAndDelete(id);
@@ -76,3 +57,5 @@ export const DELETE = async (request: NextRequest) => {
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
+
+export const DELETE = withAuthHandler(deleteTopic, true); 

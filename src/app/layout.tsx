@@ -6,8 +6,8 @@ import { ChakraProvider } from "@chakra-ui/react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CESC DevDock",
-  description: "The all in one resource database for CESC, founded 2024.",
+  title: "Everyone Classroom",
+  description: "The all in one platform to learn AI. TODAY!",
 };
 
 export default async function RootLayout({

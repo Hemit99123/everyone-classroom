@@ -1,23 +1,38 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-export const handleServerAuth = async (): Promise<NextResponse | null> => {
-    const session = await getServerSession(authOptions)
-  
-    if (!session) {
-      return NextResponse.json({ message: 'You are not logged in.' }, { status: 401 });
-    }
-    return null;
-  };
-  
-export const handleServerAdminAuth = async (): Promise<NextResponse | null> => {
-    const session = await getServerSession(authOptions)
-  
-    if (!session) {
-      return NextResponse.json({ message: 'You are not logged in.' }, { status: 401 });
-    } else if (!session.user.isAdmin) {
-      return NextResponse.json({ message: 'You do not have permission.' }, { status: 403 });
-    }
-  
-    return null;
-};
+import { Lucia } from "lucia";
+import { MongodbAdapter } from "@lucia-auth/adapter-mongodb";
+import mongoose from "mongoose";
+import connect from "./db";
+
+await connect();
+
+export const User = mongoose.models.User || mongoose.model(
+    "User",
+    new mongoose.Schema(
+        {
+            _id: { type: String, required: true },
+            name: { type: String, required: true },
+            password: { type: String, required: true },
+            role: { type: String, required: true }
+        } as const,
+        { _id: false }
+    )
+);
+
+
+// Not using this within the app (Lucia takes care of it) so no need to export it or assign it to a variable
+
+mongoose.models.Session || mongoose.model(
+    "Session",
+    new mongoose.Schema(
+        {
+            _id: { type: String, required: true },
+            user_id: { type: String, required: true }
+        } as const,
+        { _id: false }
+    )
+);
+
+export const adapter = new MongodbAdapter(
+	mongoose.connection.collection("sessions"),
+	mongoose.connection.collection("users")
+);

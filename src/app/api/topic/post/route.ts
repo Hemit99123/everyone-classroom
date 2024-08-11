@@ -1,76 +1,57 @@
+// your route file
 import Post from "@/models/Post";
-import connect from "@/utils/db";
-import { NextResponse, NextRequest } from "next/server";
-import { handleServerAuth, handleServerAdminAuth } from "@/utils/auth";
+import { NextRequest, NextResponse } from "next/server";
+import { withAuthHandler  } from "@/utils/handler";
 
-export const GET = async (request: NextRequest) => {
-  const topicId = await request.nextUrl.searchParams.get('topicId');
-      try {
-        const auth = await handleServerAuth()
+// GET handler
+const getPosts = async (request: NextRequest) => {
+  const topicId = request.nextUrl.searchParams.get('topicId');
 
-        if(auth) {
-          return auth
-        }
-            await connect();
-          const postsFromClassroom = await Post.find({ topicId })
-              .sort({ createdAt: -1 }) // Sort by creation date in ascending order
-              .exec();
-  
-          return new NextResponse(JSON.stringify(postsFromClassroom), {
-              headers: {
-                  "Content-Type": "application/json",
-              },
-          });
-      } catch (error) {
-          console.error("Error fetching data from the database:", error);
-          return new NextResponse("Internal Server Error", { status: 500 });
-      }
+  try {
+    const postsFromClassroom = await Post.find({ topicId })
+        .sort({ createdAt: -1 }) // Sort by creation date in ascending order
+        .exec();
+
+    return new NextResponse(JSON.stringify(postsFromClassroom), {
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+  } catch (error) {
+    console.error("Error fetching data from the database:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
-
-export const POST = async (request: NextRequest) => {
-    try {
-
-      const auth = await handleServerAdminAuth()
-
-      if(auth) {
-        return auth
-      }
-      const { topicId, title, message, github, realworldApplication, youtubeID, sketchfab } = await request.json();
-      // Connect to the database
-      await connect();
-  
-      const newPost = new Post({
-        topicId,
-        title,
-        message,
-        github,
-        realworldApplication,
-        youtubeID,
-        sketchfab
-      })
-  
-      try {
-        await newPost.save();
-        return NextResponse.json({ message: 'Added post to classroom' }, { status: 200 });
-      } catch (error) {
-        console.error("Error posting the data to the database:", error);
-        return new NextResponse("Internal Server Error", { status: 500 });
-      }
-    } catch (error) {
-      console.error("Error fetching data from the database:", error);
-      return new NextResponse("Internal Server Error", { status: 500 });
-    }
 };
 
-export const DELETE = async (request: NextRequest) => {
-  const auth = await handleServerAdminAuth();
+export const GET = withAuthHandler(getPosts, false); 
 
-  if (auth) {
-    return auth;
+// POST handler
+const createPost = async (request: NextRequest) => {
+  const { topicId, title, message, github, realworldApplication, youtubeID, sketchfab } = await request.json();
+  const newPost = new Post({
+    topicId,
+    title,
+    message,
+    github,
+    realworldApplication,
+    youtubeID,
+    sketchfab
+  });
+
+  try {
+    await newPost.save();
+    return NextResponse.json({ message: 'Added post to classroom' }, { status: 200 });
+  } catch (error) {
+    console.error("Error posting the data to the database:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
+};
 
+export const POST = withAuthHandler(createPost, true); 
+
+// DELETE handler
+const deletePost = async (request: NextRequest) => {
   const { id } = await request.json();
-  await connect();
 
   try {
     const deletedPost = await Post.findByIdAndDelete(id);
@@ -85,3 +66,5 @@ export const DELETE = async (request: NextRequest) => {
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
+
+export const DELETE = withAuthHandler(deletePost, true);
