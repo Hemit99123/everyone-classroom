@@ -11,3 +11,4 @@ NEXT_SECRET="any random characters"
 NEXT_URL="redirect URL"
 MONGO_URL=" to connect to MongoDB"
 ```
+# everyone-classroom
