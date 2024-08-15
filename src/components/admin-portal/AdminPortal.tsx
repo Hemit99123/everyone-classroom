@@ -135,6 +135,7 @@ const AdminPortal: React.FC = () => {
           </Alert>
         )}
         {topics.map((topic) => (
+          <>
           <Box key={topic._id} borderWidth={1} borderRadius="md" p={4} mb={4} position="relative">
             <h2>{topic.title}</h2>
             <Button onClick={() => onOpenCreatePost()} colorScheme="blue" mt={2}>
@@ -144,11 +145,12 @@ const AdminPortal: React.FC = () => {
               Fetch Posts
             </Button>
           </Box>
+          <CreatePostModal isOpen={isOpenCreatePost} onClose={onCloseCreatePost} topicId={topic._id} />
+          </>
         ))}
       </Box>
       
       <CreateClassroomModal isOpen={isOpenCreateClassroom} onClose={onCloseCreateClassroom} />
-      <CreatePostModal isOpen={isOpenCreatePost} onClose={onCloseCreatePost} topicId={selectedClassroom} />
 
       {/* Modal for displaying posts */}
       <Modal isOpen={isOpenPosts} onClose={onClosePosts}>
