@@ -40,6 +40,7 @@ export default function Nav() {
         <Flex alignItems={'center'} flex={1} justifyContent={'center'}>
           <Stack direction={'row'} spacing={10} alignItems={'center'}>
             <Button onClick={() => handleRedirect('/login')} variant={'link'}>Login</Button>
+            <Button onClick={() => handleRedirect('/register')} variant={'link'}>Register</Button>
             <Button onClick={() => handleRedirect('/dashboard')} variant={'link'}>Dashboard</Button>
             <Button variant={'link'} onClick={handleLogOut}>
               Logout
