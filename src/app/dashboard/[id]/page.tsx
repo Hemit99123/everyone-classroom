@@ -1,5 +1,5 @@
 import React from 'react'
-import DashboardDetailView from '../../../components/dashboard/DashboardDetailView'
+import DashboardDetailView from '@/components/dashboard/DashboardDetailView'
 import withAuth from '@/hoc/withAuth'
 
 const page = async () => {

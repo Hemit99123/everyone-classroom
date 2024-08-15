@@ -14,7 +14,7 @@ import {
   Button,
   Text
 } from '@chakra-ui/react';
-import { getGithubRepo, getYoutubeId, getSketchfabModel } from './utils';
+import { getGithubRepo, getYoutubeId } from './utils';
 
 interface CreatePostModalProps {
   isOpen: boolean;

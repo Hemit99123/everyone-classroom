@@ -79,14 +79,11 @@ export default function DashboardDetailView() {
               id={item._id}
               title={item.title}
               message={item.message}
-              video_conferencing={item.video_conferencing}
               githubName={item.github?.name}
               githubURL={item.github?.repo_url}
               githubCloneURL={item.github?.clone_url}
               githubLanguage={item.github?.language}
               githubDescription={item.github?.description}
-              sketchfabHTML={item.sketchfab?.html}
-              sketchfabTitle={item.sketchfab?.name}
               youtubeID={item.youtubeID}
               realworldApplication={item.realworldApplication}
               createdAt={item.createdAt}
