@@ -67,7 +67,6 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, topi
         <ModalHeader>Create a new post</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <form onSubmit={handleCreatePost}>
             <FormControl isRequired>
               <FormLabel>Title</FormLabel>
               <Input
@@ -116,10 +115,9 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, topi
                 Link Youtube
               </Button>
             </FormControl>
-            <Button type="submit" mt={2}>
+            <Button onClick={handleCreatePost} mt={2}>
               Post
             </Button>
-          </form>
         </ModalBody>
         <ModalFooter />
       </ModalContent>
