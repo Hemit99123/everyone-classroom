@@ -21,6 +21,7 @@ import {
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import CreateClassroomModal from './CreateTopicModal';
 import CreatePostModal from './CreatePostModal';
+import axios from 'axios';
 
 interface TopicProps {
   _id: string;
@@ -113,6 +114,24 @@ const AdminPortal: React.FC = () => {
     }
   };
 
+  const handleDeleteTopic = async (topicId: string) => {
+    try {
+      const result = await axios.delete(`/api/topic`, {
+        data: { id: topicId }
+      });
+  
+      if (result.status === 200) {
+        alert("Deleted topic");
+      } else {
+        alert("Error happened");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred while deleting the topic.");
+    }
+  };
+  
+
   return (
     <div>
       <Heading marginBottom={2} p={6}>
@@ -143,6 +162,9 @@ const AdminPortal: React.FC = () => {
             </Button>
             <Button onClick={() => fetchPosts(topic._id)} colorScheme="teal" mt={2} ml={2}>
               Fetch Posts
+            </Button>
+            <Button onClick={() => handleDeleteTopic(topic._id)} colorScheme="red" mt={2} ml={2}>
+              Delete
             </Button>
           </Box>
           <CreatePostModal isOpen={isOpenCreatePost} onClose={onCloseCreatePost} topicId={topic._id} />
