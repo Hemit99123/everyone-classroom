@@ -19,8 +19,10 @@ export default function Nav() {
 
   const handleLogOut = async () => {
     await axios.post('/api/auth/logout').then(result => {
-      if (result.data.success === false) {
-        alert('You are not logged in!');
+      if (result.data.success === true) {
+        alert('Logged out');
+      } else {
+        alert('You are not signed in!')
       }
     });
   };
