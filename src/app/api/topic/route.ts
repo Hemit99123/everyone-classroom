@@ -1,5 +1,6 @@
-// your route file
+// routes/api/topics.ts
 import Topics from "@/models/Topics";
+import Post from "@/models/Post";
 import { NextRequest, NextResponse } from "next/server";
 import { withAuthHandler } from "@/utils/handler";
 
@@ -18,15 +19,16 @@ const getTopics = async () => {
   }
 };
 
-export const GET = withAuthHandler(getTopics, false); 
+export const GET = withAuthHandler(getTopics, false);
 
 // POST handler
 const createTopic = async (request: NextRequest) => {
-  const { title, description } = await request.json();
+  const { title, description, tag } = await request.json();
 
   const newTopic = new Topics({
     title,
     description,
+    tag
   });
 
   try {
@@ -38,19 +40,23 @@ const createTopic = async (request: NextRequest) => {
   }
 };
 
-export const POST = withAuthHandler(createTopic, true); 
+export const POST = withAuthHandler(createTopic, true);
 
 // DELETE handler
 const deleteTopic = async (request: NextRequest) => {
   const { id } = await request.json();
 
   try {
+    // Delete all Post associated with the topicId
+    await Post.deleteMany({ topicId: id });
+
+    // Delete the topic itself
     const deletedTopic = await Topics.findByIdAndDelete(id);
 
     if (!deletedTopic) {
       return NextResponse.json({ message: 'Topic not found' }, { status: 404 });
     } else {
-      return NextResponse.json({ message: 'Deleted topic' }, { status: 200 });
+      return NextResponse.json({ message: 'Deleted topic and associated posts' }, { status: 200 });
     }
   } catch (error) {
     console.error("Error deleting the data from the database:", error);
@@ -58,4 +64,4 @@ const deleteTopic = async (request: NextRequest) => {
   }
 };
 
-export const DELETE = withAuthHandler(deleteTopic, true); 
+export const DELETE = withAuthHandler(deleteTopic, true);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, Badge, Card, CardFooter, CardHeader, Flex, Heading } from '@chakra-ui/react';
 import { EditIcon, CopyIcon, DeleteIcon } from '@chakra-ui/icons';
-import { copyURL } from '../utils';
+import { copyURL } from './utils';
 
 interface TopicCardProps {
   classItem: {

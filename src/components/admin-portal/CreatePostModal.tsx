@@ -14,7 +14,7 @@ import {
   Button,
   Text
 } from '@chakra-ui/react';
-import { getGithubRepo, getYoutubeId, getSketchfabModel } from '../utils';
+import { getGithubRepo, getYoutubeId, getSketchfabModel } from './utils';
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -53,7 +53,6 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, topi
           github: state.github_content,
           realworldApplication: state.realworldApplication,
           youtubeID: state.youtubeID,
-          sketchfab: state.sketchfab,
         }),
       });
     } catch (error) {
@@ -115,16 +114,6 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, topi
               />
               <Button onClick={() => getYoutubeId(state.youtube_link, setState, state)}>
                 Link Youtube
-              </Button>
-            </FormControl>
-            <FormControl>
-              <FormLabel>SketchFab 3D Modal</FormLabel>
-              <Input
-                placeholder="https://sketchfab.com/3d-models/the-bathroom-free-d5e5035dda434b8d9beaa7271f1c85fc"
-                onChange={(e) => setState({ ...state, model_url: e.target.value })}
-              />
-              <Button onClick={() => getSketchfabModel(state.model_url, setState, state)}>
-                Link SketchFab
               </Button>
             </FormControl>
             <Button type="submit" mt={2}>

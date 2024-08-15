@@ -26,10 +26,6 @@ const postSchema = new Schema({
   github: {
     type: Object,
     required: false
-  },
-  sketchfab: {
-    type: Object,
-    required: false
   }
 }, { timestamps: true });
 

@@ -9,6 +9,10 @@ export const POST = async () => {
 
     const sessionId = cookies().get(lucia.sessionCookieName)?.value || ""
 
+    if (!sessionId) {
+        return NextResponse.json({success: false})
+    }
+
     await lucia.invalidateSession(sessionId)
 
     // Delete cookie with now invalid session id from the frontend of the arch

@@ -14,16 +14,16 @@ import {
   Center,
   Grid
 } from '@chakra-ui/react';
+import axios from "axios";
 
-export default async function  Dashboard() {
+export default function  Dashboard() {
 
   
   interface TopicItems {
     _id: string;
     title: string;
-    instructor: string;
-    genre: string;
     description: string;
+    tag: string;
   }
 
   const [topic, setTopic] = useState<TopicItems[]>([]);
@@ -31,6 +31,13 @@ export default async function  Dashboard() {
   const date = new Date();
   const hours = date.getHours();
 
+  useEffect(() => {
+    const getTopics = () => {
+      axios.get('/api/topic').then(result => setTopic(result.data))
+    }
+
+    getTopics();
+  }, [])
 
   let timeOfDay;
 
@@ -96,7 +103,7 @@ export default async function  Dashboard() {
                         <Box>
                           <Heading size="sm">{classItem.title}</Heading>
                           <Badge borderRadius="full" px="2" colorScheme="teal">
-                            CESC
+                            {classItem.tag}
                           </Badge>
                         </Box>
                       </Flex>

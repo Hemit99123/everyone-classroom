@@ -2,10 +2,9 @@
 
 // Importing necessary dependencies
 import { useParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Post from '@/components/Post';
+import Post from '@/components/dashboard/Post';
 import { Box, Button, Center, Text } from '@chakra-ui/react';
 import { ChevronLeftIcon } from '@chakra-ui/icons';
 
@@ -40,32 +39,27 @@ export default function DashboardDetailView() {
   }
 
   // Destructuring values from useSession hook
-  const { data: session, status: sessionStatus } = useSession();
   const [posts, setPosts] = useState<Post[]>();
   const router = useRouter();
   const { id: topicId } = useParams();
 
-  const getPostData = async () => {
-    const postResponse = await fetch(`/api/topic/post?topicId=${topicId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    
-    const postData = await postResponse.json();
-    setPosts(postData);
-  }
-
-  // Fetching data when the component mounts
   useEffect(() => {
-    // Redirecting to login if the user is unauthenticated
-    if (sessionStatus === 'unauthenticated') {
-      router.replace('/login');
-    } else {
-      getPostData()
+    const getPostData = async () => {
+      const postResponse = await fetch(`/api/topic/post?topicId=${topicId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      const postData = await postResponse.json();
+      setPosts(postData);
     }
-  }, [router, sessionStatus]);
+
+    getPostData();
+  }, [])
+
+
 
   // Rendering the component
   return (

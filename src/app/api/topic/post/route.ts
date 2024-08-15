@@ -27,16 +27,21 @@ export const GET = withAuthHandler(getPosts, false);
 
 // POST handler
 const createPost = async (request: NextRequest) => {
-  const { topicId, title, message, github, realworldApplication, youtubeID, sketchfab } = await request.json();
-  const newPost = new Post({
+  const { topicId, title, message, github, realworldApplication, youtubeID } = await request.json();
+
+  // Create a post object with only the fields that are defined and are required by the db
+  const postData: any = {
     topicId,
     title,
-    message,
-    github,
-    realworldApplication,
-    youtubeID,
-    sketchfab
-  });
+    message
+  };
+
+  // Conditionally add optional fields if they are not null or undefined
+  if (github) postData.github = github;
+  if (realworldApplication) postData.realworldApplication = realworldApplication;
+  if (youtubeID) postData.youtubeID = youtubeID;
+
+  const newPost = new Post(postData);
 
   try {
     await newPost.save();
@@ -46,6 +51,7 @@ const createPost = async (request: NextRequest) => {
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
+
 
 export const POST = withAuthHandler(createPost, true); 
 

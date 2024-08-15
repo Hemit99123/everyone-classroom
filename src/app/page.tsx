@@ -27,7 +27,7 @@ const Hero = () => {
           fontWeight="bold"
           color="primary.800"
         >
-          Welcome to Everyone Classroom
+          Welcome to Everyone Classroom 3.0
         </Heading>
         <Heading
           as="h2"
