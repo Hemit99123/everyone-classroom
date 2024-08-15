@@ -20,15 +20,12 @@ interface PostProps {
   id: string;
   title: string;
   message: string;
-  video_conferencing?: string;
   githubName?: string;
   githubURL?: string;
   githubCloneURL?: string;
   githubLanguage?: string;
   githubDescription?: string;
   youtubeID?: string;
-  sketchfabHTML: string;
-  sketchfabTitle?: string;
   realworldApplication?: string;
   userSub?: string;
   updatedAt: string;

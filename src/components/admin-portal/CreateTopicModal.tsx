@@ -10,7 +10,6 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Select,
   Button,
   Textarea
 } from '@chakra-ui/react';
