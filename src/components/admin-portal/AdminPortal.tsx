@@ -163,7 +163,7 @@ const AdminPortal: React.FC = () => {
             <Button onClick={() => fetchPosts(topic._id)} colorScheme="teal" mt={2} ml={2}>
               Fetch Posts
             </Button>
-            <Button onClick={() => handleDeleteTopic(topic._id)} colorScheme="teal" mt={2} ml={2}>
+            <Button onClick={() => handleDeleteTopic(topic._id)} colorScheme="red" mt={2} ml={2}>
               Delete
             </Button>
           </Box>
