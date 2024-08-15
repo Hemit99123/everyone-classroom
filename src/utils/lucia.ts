@@ -3,7 +3,6 @@ import { Lucia } from "lucia";
 import { adapter } from "@/utils/auth";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { redirect } from "next/navigation";
 import {User} from '@/utils/auth';
 
 export const lucia = new Lucia(adapter, {
