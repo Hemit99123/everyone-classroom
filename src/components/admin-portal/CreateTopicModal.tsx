@@ -25,6 +25,7 @@ const CreateTopicModal: React.FC<CreateTopicModalProps> = ({ isOpen, onClose }) 
     title: '',
     genre: '',
     description: '',
+    tag: ''
   });
 
   const handleCreateTopic = async (e: any) => {
@@ -39,6 +40,7 @@ const CreateTopicModal: React.FC<CreateTopicModalProps> = ({ isOpen, onClose }) 
           title: state.title,
           genre: state.genre,
           description: state.description,
+          tag: state.tag
         }),
       });
     } catch (error) {
@@ -68,6 +70,14 @@ const CreateTopicModal: React.FC<CreateTopicModalProps> = ({ isOpen, onClose }) 
               <Textarea
                 placeholder="Combines both principals from computer science and electrical engineering"
                 onChange={(e) => setState({ ...state, description: e.target.value })}
+              />
+            </FormControl>
+
+            <FormControl isRequired>
+              <FormLabel>Tag</FormLabel>
+              <Textarea
+                placeholder="A tag to help users understand topic further. Keep it short!"
+                onChange={(e) => setState({ ...state, tag: e.target.value })}
               />
             </FormControl>
 

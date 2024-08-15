@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-const classSchema = new Schema(
+const topicSchema = new Schema(
   {
     title: {
       type: String,
@@ -11,9 +11,13 @@ const classSchema = new Schema(
     description: {
       type: String,
       required: true,
+    },
+    tag: {
+      type: String,
+      required: true,
     }
   },
   { timestamps: true }
 );
 
-export default mongoose.models.Class || mongoose.model("Class", classSchema);
+export default mongoose.models.Topic || mongoose.model("Topic", topicSchema);

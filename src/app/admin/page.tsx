@@ -1,36 +1,14 @@
-'use client'
-
-import React, {useEffect, useState} from 'react'
-import { useSession } from "next-auth/react"
+import React from 'react'
 import AdminPortal from '@/components/admin-portal/AdminPortal'
-import {useRouter} from 'next/navigation'
+import withAdminAuth from '@/hoc/withAdminAuth';
 
-const Admin = () => {
-
-  interface TopicProps {
-    _id: string;
-    title: string;
-  }
-  const { data: session, status }: any = useSession();
-  const router = useRouter()
-  const [classroom, setClassroom] = useState<TopicProps[]>([]);
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-        // Redirect to the login page if the user is not authenticated
-        router.replace('/login');
-    }
-  }, [status]); 
+const Admin = async () => {
 
   return (
     <div>
-      {session?.user.isAdmin
-        ? <AdminPortal />
-        : <span>you are not allowed to see this page</span>
-      }
-      
+      <AdminPortal />
     </div>
   );
 }
 
-export default Admin;
+export default withAdminAuth(Admin);

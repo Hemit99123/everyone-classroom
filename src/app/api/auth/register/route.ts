@@ -1,35 +1,24 @@
-import User from "@/models/User";
+import {User} from '@/utils/auth';
+import { NextRequest, NextResponse } from "next/server"
+import bcrypt from 'bcryptjs'
 import connect from "@/utils/db";
-import bcrypt from "bcryptjs";
-import { NextResponse, NextRequest } from "next/server";
 
-export const POST = async (request: NextRequest) => {
-  const { name, email, password } = await request.json();
+export const POST = async (req: NextRequest) => {
+    try {
+        // Connecting to the database
+        await connect();
+        var saltRounds = 10
+        const {email, password, name } = await req.json();
 
-  await connect();
+        // Hashing password for extra secuirty
 
-  const existingUser = await User.findOne({ email });
+        const salt = bcrypt.genSaltSync(saltRounds);
+        const hashed = bcrypt.hashSync(password, salt);
 
-  if (existingUser) {
-    return new NextResponse("Email is already in use", { status: 400 });
-  }
+        await User.create({_id: email, name, password: hashed, role: "user"})
 
-  const hashedPassword = await bcrypt.hash(password, 5);
-  const newUser = new User({
-    name,
-    email,
-    password: hashedPassword,
-    isAdmin: false
-  });
-
-  try {
-    await newUser.save();
-    const userId = newUser._id; // Assuming MongoDB's default ObjectId
-    return NextResponse.json({ id: userId }, {status: 200});
-  } catch (err: any) {
-    return new NextResponse(err, {
-      status: 500,
-      statusText: err
-    });
-  }
-};
+        return NextResponse.json({success: true})
+    } catch(err) {
+        return NextResponse.json({success: false, error: err})
+    }
+}
