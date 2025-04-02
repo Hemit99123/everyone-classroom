@@ -15,7 +15,9 @@ Prefix your PRs with the Conventional Commits styling for best practice. This wa
 - Frontend: NextJS, Charka UI for styling
 - Backend: NextJS Router
 - Database: MongoDB and Mongoose for ORM + data modelling
-The environmental variables required are:
+
+
+### Environmental variables:
 
 ```bash
 MONGO_URL="url to connect to MongoDB"
